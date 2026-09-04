@@ -78,6 +78,13 @@ bash auto-updater/scripts/update_all.sh
 - **Уведомления и вибрация:** Оповещение пользователя о завершении генерации или ошибках через шторку Android (`./scripts/notify.sh`, `./scripts/vibrate.sh`).
 - **Буфер обмена (Clipboard Sync):** Мгновенная передача кода в системный буфер Android (`./scripts/clipboard.sh set "текст"`).
 - **Интерактивные диалоги:** Запрос подтверждения или ввода данных через нативные окна Android (`./scripts/dialog.sh`).
+- **Датчики и TTS:** Опрос аппаратных сенсоров (`./scripts/sensor_read.sh`) и голосовой синтез (`./scripts/tts_speak.sh`).
+
+### Связанные MCP-мосты и архитектурные решения:
+- 🔌 **[TecnicalBot/termux-mcp](https://github.com/TecnicalBot/termux-mcp)** — Безопасный MCP-сервер для прямого подключения Termux:API к LLM-агентам с политикой default-deny и аудитом каждого вызова.
+- 🧩 **[ZH3KA11/Termux-Assistent-](https://github.com/ZH3KA11/Termux-Assistent-)** — Модульная трёхкомпонентная архитектура скиллов для Termux (разделение на `device`, `comms`, `system`).
+- ⚡ **[lobehub/android-shizuku-mcp](https://github.com/lobehub/android-shizuku-mcp)** — Shizuku MCP мост для выполнения привилегированных Android системных API без рут-доступа.
+- 🚀 **[wallentx/antigravity-cli-termux](https://github.com/wallentx/antigravity-cli-termux)** — Главный апстрим автономного ядра Antigravity CLI для Termux с поддержкой 39-bit VA space.
 
 ---
 

@@ -42,7 +42,11 @@ description: Взаимодействие с Android OS и аппаратным�
 4. **Wakelock Management:**
    - Длительные фоновые расчеты должны удерживать `termux-wake-lock` и обязательно освобождать его (`termux-wake-unlock`) по завершении.
 
-## Ссылки
+## Ссылки и экосистема
 
-- Upstream Termux:API: https://github.com/termux/termux-api
-- Документация Termux Wiki: https://wiki.termux.com/wiki/Termux:API
+- **TecnicalBot/termux-mcp**: [https://github.com/TecnicalBot/termux-mcp](https://github.com/TecnicalBot/termux-mcp) — MCP-сервер для прямого подключения Termux:API к AI-агентам с политикой безопасности default-deny и аудитом.
+- **ZH3KA11/Termux-Assistent-**: [https://github.com/ZH3KA11/Termux-Assistent-](https://github.com/ZH3KA11/Termux-Assistent-) — модульная 3-компонентная архитектура скиллов Termux (device, comms, system).
+- **lobehub/android-shizuku-mcp**: [https://github.com/lobehub/android-shizuku-mcp](https://github.com/lobehub/android-shizuku-mcp) — расширенный мост Shizuku MCP для выполнения привилегированных системных операций Android без полного root.
+- **wallentx/antigravity-cli-termux**: [https://github.com/wallentx/antigravity-cli-termux](https://github.com/wallentx/antigravity-cli-termux) — официальный апстрим ядра Antigravity CLI для Termux с поддержкой 39-bit VA и NDK Bionic бутстраппером.
+- **Termux:API Upstream**: [https://github.com/termux/termux-api](https://github.com/termux/termux-api) — официальный репозиторий утилит Termux:API.
+- **Документация Termux Wiki**: [https://wiki.termux.com/wiki/Termux:API](https://wiki.termux.com/wiki/Termux:API) — справочник всех команд API.
