@@ -1,0 +1,10 @@
+# Logs & runtime artifacts
+*.log
+/tmp/
+last_update.timestamp
+.DS_Store
+
+# Temporary & backup files
+*~
+*.swp
+*.bak
