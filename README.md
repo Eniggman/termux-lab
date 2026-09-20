@@ -1,3 +1,5 @@
+> **Версия:** 1.0 • **Последнее обновление:** 2026-09-20
+
 <div align="center">
 
 # 🧪 Termux Lab: Core Tooling & Integration Hub
