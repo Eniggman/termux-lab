@@ -26,6 +26,7 @@ termux-lab/
 ├── auto-updater/              # Модуль безопасного автоматического обновления
 │   ├── SKILL.md               # Документация и регламент обновления
 │   └── scripts/
+│       ├── hook_check.py      # Автономный PreInvocation хук для Antigravity CLI
 │       └── update_all.sh      # Скрипт проверки и обновления пакетов/менеджеров
 ├── termux-api/                # Аппаратный мост к Android OS и датчикам
 │   ├── SKILL.md               # Руководство по интеграции с Termux:API
@@ -53,11 +54,15 @@ termux-lab/
 - **Мульти-менеджеры:** Поддержка нативных пакетов `pkg`/`apt`, глобальных NPM-модулей, `pip` и `uv tools`.
 - **Исключения безопасности:** Пакет `@anthropic-ai/claude-code` строго изолирован и исключен из автоапдейтов.
 - **Интеграция с `termux-fix-path`:** Автоматическая проверка и нормализация shebang (`termux-fix-shebang`) для всех CLI-скриптов в `$(npm prefix -g)/bin`.
-- **Защита от спама и циклов:** Встроенный кулдаун (7 дней) через `last_update.timestamp` и запрет неинтерактивного запуска без подтверждения пользователя.
+- **Автономный PreInvocation хук и кулдаун:** Ежедневный цикл (24ч) через PreInvocation хук Antigravity CLI (`scripts/hook_check.py`), безопасные флаги `--auto`/`--yes`/`-y` и кулдаун через `last_update.timestamp`.
 
 ### Использование:
 ```bash
+# Ручной интерактивный запуск
 bash auto-updater/scripts/update_all.sh
+
+# Автоматический режим (для агентов и хуков)
+bash auto-updater/scripts/update_all.sh --auto
 ```
 
 ---

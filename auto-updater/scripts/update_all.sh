@@ -5,9 +5,17 @@ SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_DIR="${SKILL_DIR:-$SCRIPT_DIR/..}"
 LAST_UPDATE_FILE="$SKILL_DIR/last_update.timestamp"
 
-COOLDOWN_SECONDS=604800
+COOLDOWN_SECONDS="${COOLDOWN_SECONDS:-86400}"
 
-if [ -f "$LAST_UPDATE_FILE" ]; then
+FORCE_RUN=0
+for arg in "$@"; do
+    if [ "$arg" = "--force" ]; then
+        FORCE_RUN=1
+        break
+    fi
+done
+
+if [ -f "$LAST_UPDATE_FILE" ] && [ "$FORCE_RUN" -ne 1 ]; then
     LAST_UPDATE=$(<"$LAST_UPDATE_FILE")
     NOW=$(date +%s)
     if [[ "$LAST_UPDATE" =~ ^[0-9]+$ ]] && [ "$NOW" -ge "$LAST_UPDATE" ]; then
@@ -34,8 +42,20 @@ if [ -z "${PREFIX:-}" ] || [ ! -x "$PREFIX/bin/pkg" ] || [ ! -x "$PREFIX/bin/apt
     exit 2
 fi
 
-# Обновление меняет систему, поэтому фоновый запуск без терминала запрещён.
-if [ ! -t 0 ]; then
+# Обновление меняет систему, поэтому фоновый запуск без терминала запрещён,
+# за исключением автоматического режима (AUTO_APPROVE=1, флаги --auto / --yes / -y).
+AUTO_MODE=0
+for arg in "$@"; do
+    if [ "$arg" = "--auto" ] || [ "$arg" = "--yes" ] || [ "$arg" = "-y" ]; then
+        AUTO_MODE=1
+        break
+    fi
+done
+if [ "${AUTO_APPROVE:-0}" = "1" ]; then
+    AUTO_MODE=1
+fi
+
+if [ ! -t 0 ] && [ "$AUTO_MODE" -ne 1 ]; then
     echo "ERROR: interactive approval is required; refusing unattended update."
     echo "UPDATE_NEEDS_APPROVAL"
     exit 2
@@ -163,8 +183,13 @@ echo "  4) repair Termux shebangs for all global NPM CLI binaries;"
 echo "  5) update outdated pip packages and uv tools when detected;"
 echo "  6) let agy check and ask before applying its own update;"
 echo "  7) verify launches and guide recovery via termux-fix-path Module 9 if needed."
-printf "Proceed with the update? [y/N] "
-IFS= read -r APPROVAL
+if [ "$AUTO_MODE" -eq 1 ]; then
+    APPROVAL="y"
+    echo "Auto-mode enabled: proceeding with update."
+else
+    printf "Proceed with the update? [y/N] "
+    IFS= read -r APPROVAL
+fi
 case "$APPROVAL" in
     y|Y|yes|YES)
         ;;
@@ -176,14 +201,19 @@ esac
 
 PIP_APPROVED=0
 if [ -n "$PIP_PACKAGES" ]; then
-    echo
-    echo "WARNING: pip may overwrite Python packages managed by Termux/pkg."
-    printf "Update the detected pip packages separately? [y/N] "
-    IFS= read -r PIP_APPROVAL
-    case "$PIP_APPROVAL" in
-        y|Y|yes|YES) PIP_APPROVED=1 ;;
-        *) echo "Pip updates skipped by default." ;;
-    esac
+    if [ "$AUTO_MODE" -eq 1 ]; then
+        PIP_APPROVED=0
+        echo "Auto-mode: skipping pip updates by default to prevent conflicts with pkg."
+    else
+        echo
+        echo "WARNING: pip may overwrite Python packages managed by Termux/pkg."
+        printf "Update the detected pip packages separately? [y/N] "
+        IFS= read -r PIP_APPROVAL
+        case "$PIP_APPROVAL" in
+            y|Y|yes|YES) PIP_APPROVED=1 ;;
+            *) echo "Pip updates skipped by default." ;;
+        esac
+    fi
 fi
 
 echo
@@ -228,8 +258,12 @@ if [ -d "$LOCAL_BIN" ]; then
             # Verify if native binary is functional
             if "$PREFIX/bin/$base" --version >/dev/null 2>&1 || "$PREFIX/bin/$base" -v >/dev/null 2>&1 || "$PREFIX/bin/$base" --help >/dev/null 2>&1; then
                 echo "Native binary $PREFIX/bin/$base is functional."
-                printf "Move shadowing wrapper to %s and clear shell hash cache? [y/N] " "$BACKUP_DIR"
-                IFS= read -r DEACTIVATE_CHOICE
+                if [ "$AUTO_MODE" -eq 1 ]; then
+                    DEACTIVATE_CHOICE="y"
+                else
+                    printf "Move shadowing wrapper to %s and clear shell hash cache? [y/N] " "$BACKUP_DIR"
+                    IFS= read -r DEACTIVATE_CHOICE
+                fi
                 case "$DEACTIVATE_CHOICE" in
                     y|Y|yes|YES)
                         mkdir -p "$BACKUP_DIR"
@@ -349,7 +383,12 @@ if [ "$ERRORS" -gt 0 ]; then
     echo "UPDATE_FAILED"
     exit 1
 else
-    date +%s > "$LAST_UPDATE_FILE"
+    NOW_TS=$(date +%s)
+    echo "$NOW_TS" > "$LAST_UPDATE_FILE"
+    MIRROR_DIR="${AUTO_UPDATER_MIRROR_DIR:-/sdcard/.EasyCode/skills/auto-updater}"
+    if [ -d "$MIRROR_DIR" ]; then
+        echo "$NOW_TS" > "$MIRROR_DIR/last_update.timestamp" 2>/dev/null || true
+    fi
     echo "UPDATE_SUCCESS"
     exit 0
 fi
