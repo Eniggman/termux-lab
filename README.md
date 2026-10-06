@@ -131,3 +131,9 @@ curl -fsSL https://raw.githubusercontent.com/wallentx/antigravity-cli-termux/dev
 - **Организация:** [Enigman Termux Lab](https://github.com/Enigman-Termux-lab)
 - **Мейнтейнер:** [@Eniggman](https://github.com/Eniggman)
 - **Лицензия:** [MIT](LICENSE)
+
+---
+
+## English summary
+
+Core tools for running autonomous AI agents in Termux on Android, part of Enigman Termux Lab. The auto-updater module safely updates pkg/apt, global npm, pip and uv packages with Termux-specific fixes (shebangs, Bionic vs glibc) and can run daily via an Antigravity CLI hook, while the termux-api module gives agents Bash wrappers for Termux:API: battery status, notifications, vibration, toasts, clipboard, dialogs, sensors and text-to-speech. Both modules ship as AI agent skills (auto-updater/SKILL.md and termux-api/SKILL.md): copy a module folder into your agent's skills directory or point the agent to its SKILL.md.
